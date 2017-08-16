@@ -1,0 +1,18 @@
+bayes_people_tracker:
+    filter_type: "UKF"                                         # The Kalman filter type: EKF = Extended Kalman Filter, UKF = Uncented Kalman Filter
+    cv_noise_params:                                           # The noise for the constant velocity prediction model
+        x: 1.4
+        y: 1.4
+    detectors:                                                 # Add detectors under this namespace
+        upper_body_detector:                                   # Name of detector (used internally to identify them). Has to be unique.
+            topic: "/upper_body_detector/bounding_box_centres" # The topic on which the geometry_msgs/PoseArray is published
+            cartesian_noise_params:                            # The noise for the cartesian observation model
+                x: 0.5
+                y: 0.5
+            matching_algorithm: "NNJPDA"                       # The algorthim to match different detections. NN = Nearest Neighbour, NNJPDA = NN Joint Probability Data Association
+        leg_detector:                                          # Name of detector (used internally to identify them). Has to be unique.
+            topic: "/to_pose_array/leg_detector"               # The topic on which the geometry_msgs/PoseArray is published
+            cartesian_noise_params:                            # The noise for the cartesian observation model
+                x: 0.2
+                y: 0.2
+            matching_algorithm: "NNJPDA"                       # The algorthim to match different detections. NN = Nearest Neighbour, NNJPDA = NN Joint Probability Data Association

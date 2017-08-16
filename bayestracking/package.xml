@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <name>bayes_tracking</name>
+  <version>1.0.5</version>
+  <description>The bayestracking package uses extended or unscented Kalman filters to track movement. The constant velocity model has been designed to track the movement of people in cartesian space in particular.</description>
+
+  <maintainer email="cdondrup@lincoln.ac.uk">Christian Dondrup</maintainer>
+  <maintainer email="mhanheide@lincoln.ac.uk">Marc Hanheide</maintainer>
+  
+  <license>MIT</license>
+
+  <url type="git">https://github.com/LCAS/bayestracking</url>
+  <url type="doi">http://dx.doi.org/10.5281/zenodo.10318</url>
+
+  <author email="nbellotto@lincoln.ac.uk">Nicola Bellotto</author>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>boost</build_depend>
+  <build_depend>libblas-dev</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <run_depend>boost</run_depend>
+  <run_depend>libblas-dev</run_depend>
+  <run_depend>cv_bridge</run_depend>
+
+  <export/>
+</package>

@@ -1,0 +1,1 @@
+copy grid.py to ~/.ros/
