@@ -2,7 +2,7 @@
   <!-- rosbag play -->
   <arg name="bag"/>
   <param name="use_sim_time" value="true"/>
-  <node pkg="rosbag" type="play" name="rosbag_play" args="--clock --pause --queue=1000 $(arg bag)" required="true"/>
+  <node pkg="rosbag" type="play" name="rosbag_play" args="--clock --queue=1000 $(arg bag)" required="true"/>
   
   <!-- Velodyne VLP-16 -->
   <node pkg="velodyne_pointcloud" type="cloud_node" name="cloud_node">
