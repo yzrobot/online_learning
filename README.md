@@ -22,11 +22,12 @@ $ catkin_make
 If you are considering using this code, please reference the following:
 ```
 @inproceedings{yz17iros,
-author = {Zhi Yan and Tom Duckett and Nicola Bellotto},
-title = {Online Learning for Human Classification in 3D LiDAR-based Tracking},
-booktitle = {In Proceedings of the 2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-address = {Vancouver, Canada},
-month = {September},
-year = {2017}
+   author = {Zhi Yan and Tom Duckett and Nicola Bellotto},
+   title = {Online learning for human classification in {3D LiDAR-based} tracking},
+   booktitle = {In Proceedings of the 2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+   pages = {864--871},
+   address = {Vancouver, Canada},
+   month = {September},
+   year = {2017}
 }
 ```
