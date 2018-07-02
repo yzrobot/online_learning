@@ -14,6 +14,9 @@ $ cd ~/catkin_ws
 $ catkin_make
 ```
 
+## Dataset ##
+[https://lcas.lincoln.ac.uk/wp/research/data-sets-software/l-cas-multisensor-people-dataset/](https://lcas.lincoln.ac.uk/wp/research/data-sets-software/l-cas-multisensor-people-dataset/)
+
 ## Citation ##
 If you are considering using this code, please reference the following:
 ```
