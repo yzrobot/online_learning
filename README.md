@@ -17,10 +17,12 @@ $ catkin_make
 ## Citation ##
 If you are considering using this code, please reference the following:
 ```
-@article{yan2018multisensor,
-  title={Multisensor Online Transfer Learning for 3D LiDAR-based Human Detection with a Mobile Robot},
-  author={Yan, Zhi and Sun, Li and Duckett, Tom and Bellotto, Nicola},
-  journal={arXiv preprint arXiv:1801.04137},
-  year={2018}
+@inproceedings{yz18iros,
+   title={Multisensor Online Transfer Learning for 3D LiDAR-based Human Detection with a Mobile Robot},
+   author={Zhi Yan and Li Sun and Tom Duckett and Nicola Bellotto},
+   booktitle = {In Proceedings of the 2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+   address = {Madrid, Spain},
+   month = {October},
+   year = {2018}
 }
 ```
