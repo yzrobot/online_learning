@@ -1,0 +1,50 @@
+<launch>
+  <!-- rosbag play -->
+  <arg name="bag"/>
+  <param name="use_sim_time" value="true"/>
+  <node pkg="rosbag" type="play" name="rosbag_play" args="--clock $(arg bag)" required="true"/>
+  
+  <!-- Velodyne VLP-16 -->
+  <node pkg="velodyne_pointcloud" type="cloud_node" name="cloud_node">
+    <param name="calibration" value="$(find object3d_detector)/config/vlp16.yaml"/>
+    <param name="min_range" value="0.4"/>
+    <param name="max_range" value="130.0"/>
+  </node>
+  
+  <!-- Asus Xtion Pro Live -->
+  <include file="$(find openni2_launch)/launch/openni2.launch">
+    <arg name="load_driver" value="false"/>
+    <arg name="publish_tf" value="false"/>
+  </include>
+ 
+  <!-- STRANDS Ground Plane Estimation -->
+  <include file="$(find ground_plane_estimation)/launch/ground_plane_estimated.launch">
+    <arg name="camera_namespace" value="/camera"/>
+  </include>
+  
+  <!-- STRANDS Upper Body Detector -->
+  <include file="$(find upper_body_detector)/launch/upper_body_detector.launch">
+    <arg name="camera_namespace" value="/camera"/>
+  </include>
+  
+  <!-- ROS leg detector -->
+  <include file="$(find detector_msg_to_pose_array)/launch/to_pose_array.launch"/>
+  <node pkg="leg_detector" type="leg_detector" name="leg_detector" args="scan:=scan $(find leg_detector)/config/trained_leg_detector.yaml" output="screen">
+    <param name="fixed_frame" type="string" value="odom"/>
+    <param name="publish_leg_markers" type="bool" value="false"/>
+    <param name="publish_people_markers" type="bool" value="true"/>
+  </node>
+  
+  <!-- FLOBOT 3D Object Detector -->
+  <node pkg="object3d_detector" type="object3d_detector_ol" name="object3d_detector_ol" output="screen" respawn="true">
+    <param name="print_fps" type="bool" value="false"/>
+  </node>
+  
+  <!-- NBellotto's Bayes People Tracker -->
+  <rosparam command="load" file="$(find object3d_detector)/config/object3d_detector_ol_ms.yaml"/>
+  <node pkg="bayes_people_tracker" type="bayes_people_tracker_ol_ms" name="bayes_people_tracker_ol_ms" output="screen" respawn="true">
+    <param name="target_frame" type="string" value="odom"/>
+  </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find object3d_detector)/launch/object3d_detector_ol_ms.rviz"/>
+</launch>

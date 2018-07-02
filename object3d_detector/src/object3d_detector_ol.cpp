@@ -15,6 +15,8 @@
 // SVM
 #include "svm.h"
 
+#define MULTI_SENSOR
+
 typedef struct feature {
   /*** for visualization ***/
   Eigen::Vector4f centroid;
@@ -86,6 +88,7 @@ private:
   std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZI>::Ptr > > learnable_clusters_;
   std::vector<double> clusters_probability_;
   bool find_the_best_training_parameters_;
+  float track_probability_;
   
 public:
   Object3dDetector();
@@ -123,7 +126,8 @@ Object3dDetector::Object3dDetector() {
   private_nh.param<int>("round_negatives", round_negatives_, 100);
   private_nh.param<int>("max_trains", max_trains_, 11);
   private_nh.param<bool>("find_the_best_training_parameters", find_the_best_training_parameters_, true);
-
+  private_nh.param<float>("track_probability", track_probability_, 0.7);
+  
   private_nh.param<float>("vfilter_min_x", vfilter_min_x_, 0.2);
   private_nh.param<float>("vfilter_max_x", vfilter_max_x_, 1.0);
   private_nh.param<float>("vfilter_min_y", vfilter_min_y_, 0.2);
@@ -155,8 +159,9 @@ Object3dDetector::Object3dDetector() {
   svm_problem_.l = 0;
   svm_problem_.y = (double *)malloc(svm_node_size_*sizeof(double));
   svm_problem_.x = (struct svm_node **)malloc(svm_node_size_*sizeof(struct svm_node *));
-  for(int i = 0; i < svm_node_size_; i++)
+  for(int i = 0; i < svm_node_size_; i++) {
     svm_problem_.x[i] = (struct svm_node *)malloc((FEATURE_SIZE + 1)*sizeof(struct svm_node));
+  }
   // one-line malloc
   //svm_problem_.x = (struct svm_node **)malloc((max_positives_+max_negatives_)*sizeof(struct svm_node *)+((max_positives_+max_negatives_)*((FEATURE_SIZE+1)*sizeof(struct svm_node))));
   
@@ -185,10 +190,72 @@ Object3dDetector::~Object3dDetector() {
 
 /*** learning ***/
 void Object3dDetector::trajectoryCallback(const geometry_msgs::PoseArray::ConstPtr& trajectory) {
-  if(train_round_ == max_trains_ || (positive_+negative_) == (max_positives_+max_negatives_))
+  if(train_round_ == max_trains_ || (positive_+negative_) == (max_positives_+max_negatives_)) {
     return;
+  }
   
   pcl::PointCloud<pcl::PointXYZI> learned_cloud; // debug publishing
+  
+#ifdef MULTI_SENSOR
+  /*** track probability, leg_reliability_limit = 0.7, evaluation_greedy_NMS_threshold = 0.5 ***/
+  bool human_trajectory = false;
+  for(int i = 0; i < trajectory->poses.size(); i++) {
+    if(trajectory->poses[i].position.z < 0.0) {
+      if(train_round_ > 0) {
+	std::vector<double> probabilities, odds;
+	for(int j = 0; j < trajectory->poses.size(); j++) {
+	  for(int k = 0; k < learnable_clusters_.size(); k++) {
+	    if((uint32_t)trajectory->poses[j].position.z == learnable_clusters_[k]->header.seq) {
+	      probabilities.push_back(clusters_probability_[k]);
+	    }
+	  }
+	}
+	if(probabilities.size() > 0) {
+	  double product_odds = 1.0;
+	  for(int k = 0; k < probabilities.size(); k++) {
+	    if(probabilities[k] == 1.0) {
+	      odds.push_back(100.0);
+	    } else {
+	      odds.push_back(probabilities[k] / (1 - probabilities[k]));
+	    }
+	  }
+	  for(int k = 0; k < odds.size(); k++) {
+	    product_odds *= odds[k];
+	  }
+	  //std::cerr << (product_odds / (1 + product_odds)) << std::endl;
+	  if(product_odds / (1 + product_odds) > track_probability_) {
+	    human_trajectory = true;
+	  }
+	}
+      } else {
+	human_trajectory = true;
+      }
+      break;
+    }
+  }
+  
+  if(human_trajectory) {
+    bool stop = false;
+    for(int i = 0; i < trajectory->poses.size(); i++) {
+      for(int j = 0; j < learnable_clusters_.size(); j++) {
+  	if((uint32_t)trajectory->poses[i].position.z == learnable_clusters_[j]->header.seq) {
+  	  Feature f;
+  	  extractFeature(learnable_clusters_[j], f);
+  	  saveFeature(f, svm_problem_.x[svm_problem_.l]);
+  	  if(positive_ < max_positives_) {
+  	    svm_problem_.y[svm_problem_.l++] = 1; // positive label
+  	    ++positive_ >= max_positives_ ? stop = true : stop = false;
+  	  }
+  	  //learned_cloud += *learnable_clusters_[j];
+  	  break;
+  	}
+      }
+      if(stop) {
+	break;
+      }
+    }
+  }
+#else
   bool learn_it = true;
   
   if(train_round_ > 0) {
@@ -218,7 +285,7 @@ void Object3dDetector::trajectoryCallback(const geometry_msgs::PoseArray::ConstP
 	    //learned_cloud += *learnable_clusters_[j];
 	  }
 	  if(train_round_ > 0 && trajectory->header.frame_id == "static_trajectory" && negative_ < max_negatives_) {
-	    svm_problem_.y[svm_problem_.l++] = -1; // -1, the negative label
+	    svm_problem_.y[svm_problem_.l++] = -1; // negative label
 	    ++negative_ >= max_negatives_ ? stop = true : stop = false;
 	    //learned_cloud += *learnable_clusters_[j];
 	  }
@@ -228,6 +295,7 @@ void Object3dDetector::trajectoryCallback(const geometry_msgs::PoseArray::ConstP
       if(stop) break;
     }
   }
+#endif
   
   if(learned_cloud_pub_.getNumSubscribers() > 0) {
     sensor_msgs::PointCloud2 ros_cloud;
@@ -328,7 +396,7 @@ void Object3dDetector::extractCluster(pcl::PointCloud<pcl::PointXYZI>::Ptr pc) {
 	    Feature f;
 	    extractFeature(cluster, f);
 	    saveFeature(f, svm_problem_.x[svm_problem_.l]);
-	    svm_problem_.y[svm_problem_.l++] = -1; // -1, the negative label
+	    svm_problem_.y[svm_problem_.l++] = -1; // negative label
 	    ++negative_;
 	  }
 	}

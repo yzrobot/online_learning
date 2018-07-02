@@ -29,7 +29,7 @@ add_library(${PROJECT_NAME} STATIC
     src/bayes_tracking/ekfilter.cpp 
     src/bayes_tracking/ukfilter.cpp 
     src/bayes_tracking/pfilter.cpp 
-    src/bayes_tracking/trackwin.cpp 
+##    src/bayes_tracking/trackwin.cpp 
     src/bayes_tracking/models.cpp
     src/bayes_tracking/BayesFilter/bayesFltAlg.cpp
     src/bayes_tracking/BayesFilter/bayesFlt.cpp
@@ -63,7 +63,7 @@ if(catkin_FOUND)
   )
 endif(catkin_FOUND)
 
-add_subdirectory(examples)
+## add_subdirectory(examples)
 
 ## Optional builds: documentation
 OPTION (BAYESTRACKING_BUILD_DOC "Generates API documentation" OFF)

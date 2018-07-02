@@ -1,5 +1,7 @@
 #include "people_tracker/people_tracker.h"
 
+//#define MULTI_SENSOR
+
 PeopleTracker::PeopleTracker() : detect_seq(0), marker_seq(0) {
   ros::NodeHandle n;
   
@@ -14,6 +16,7 @@ PeopleTracker::PeopleTracker() : detect_seq(0), marker_seq(0) {
   std::string pub_topic_pose_array;
   std::string pub_topic_people;
   std::string pub_topic_trajectory;
+  std::string pub_topic_trajectory_acc;
   std::string pub_topic_marker;
   
   // Initialize node parameters from launch file or command line.
@@ -24,7 +27,7 @@ PeopleTracker::PeopleTracker() : detect_seq(0), marker_seq(0) {
   private_node_handle.param("target_frame", target_frame, std::string("base_link"));
   private_node_handle.param("tracker_frequency", tracker_frequency, double(30.0));
   private_node_handle.param("log_trajectories", log_trajectories, false);
-#ifdef ONLINE_LEARNING
+#if defined(ONLINE_LEARNING) && !defined(MULTI_SENSOR)
   private_node_handle.param("human_path_min", human_path_min, double(3.0));
   private_node_handle.param("human_velo_min", human_velo_min, double(0.3));
   private_node_handle.param("human_velo_max", human_velo_max, double(1.0));
@@ -49,6 +52,8 @@ PeopleTracker::PeopleTracker() : detect_seq(0), marker_seq(0) {
   pub_people = n.advertise<people_msgs::People>(pub_topic_people.c_str(), 100, con_cb, con_cb);
   private_node_handle.param("trajectory", pub_topic_trajectory, std::string("/people_tracker/trajectory"));
   pub_trajectory = n.advertise<geometry_msgs::PoseArray>(pub_topic_trajectory.c_str(), 100, con_cb, con_cb);
+  private_node_handle.param("trajectory_acc", pub_topic_trajectory_acc, std::string("/people_tracker/trajectory_acc"));
+  pub_trajectory_acc = n.advertise<geometry_msgs::PoseArray>(pub_topic_trajectory_acc.c_str(), 100, con_cb, con_cb);
   private_node_handle.param("marker", pub_topic_marker, std::string("/people_tracker/marker_array"));
   pub_marker = n.advertise<visualization_msgs::MarkerArray>(pub_topic_marker.c_str(), 100, con_cb, con_cb);
   
@@ -259,6 +264,14 @@ void PeopleTracker::trackingThread() {
       if(pub_marker.getNumSubscribers())
 	createVisualisation(poses, pids, pub_marker);
       
+      if(pub_trajectory_acc.getNumSubscribers()) {
+	geometry_msgs::PoseArray trajectory_acc;
+	trajectory_acc.header.stamp = ros::Time::now();
+  	trajectory_acc.header.frame_id = target_frame;
+	trajectory_acc.poses = poses;
+	pub_trajectory_acc.publish(trajectory_acc);
+      }
+      
       //if(pub_trajectory.getNumSubscribers())
       publishTrajectory(poses, vels, vars, pids, pub_trajectory);
     }
@@ -354,7 +367,7 @@ void PeopleTracker::publishTrajectory(std::vector<geometry_msgs::Pose> poses,
 				      std::vector<geometry_msgs::Pose> vars,
 				      std::vector<long> pids,
 				      ros::Publisher& pub) {
-#ifdef ONLINE_LEARNING
+#if defined(ONLINE_LEARNING) && !defined(MULTI_SENSOR)
   /*** find how many repeated poses in previous_poses ***/
   //@todo really necessary? If so, fusing with "find trajectories"
   bool checked[previous_poses.size()];
@@ -390,9 +403,11 @@ void PeopleTracker::publishTrajectory(std::vector<geometry_msgs::Pose> poses,
 	trajectory.header.seq = boost::get<0>(previous_poses[i]); // tracking ID
 	trajectory.header.stamp = ros::Time::now();
 	pub.publish(trajectory);
-	for(int j = 0; j < previous_poses.size(); j++)
-	  if(boost::get<0>(previous_poses[j]) == trajectory.header.seq)
+	for(int j = 0; j < previous_poses.size(); j++) {
+	  if(boost::get<0>(previous_poses[j]) == trajectory.header.seq) {
 	    boost::get<0>(previous_poses[j]) = INVALID_ID;
+	  }
+	}
       }
     }
   }
@@ -423,15 +438,16 @@ void PeopleTracker::publishTrajectory(std::vector<geometry_msgs::Pose> poses,
   	    boost::get<0>(previous_poses[j]) = INVALID_ID;
   	  }
   	}
-#ifdef ONLINE_LEARNING
+#if defined(ONLINE_LEARNING) && !defined(MULTI_SENSOR)
   	PN_experts(variance, velocity, trajectory);
 #endif
 	//trajectory.poses.insert(trajectory.poses.end(), variance.poses.begin(), variance.poses.end()); //@NB_test
   	pub.publish(trajectory);
   	//std::cerr << "[people_tracker] trajectory ID = " << trajectory.header.seq << ", timestamp = " << trajectory.header.stamp << ", poses size = " << trajectory.poses.size() << std::endl;
 	if(log_trajectories) {
-	  for(int k = 0; k < trajectory.poses.size(); k++)
-	    std::cerr << trajectory.poses[k].position.x << " " << trajectory.poses[k].position.y << std::endl;
+	  for(int k = 0; k < trajectory.poses.size(); k++) {
+	    std::cerr << trajectory.poses[k].position.x << " " << std::cerr << trajectory.poses[k].position.y << std::endl;
+	  }
 	}
       }
     }
@@ -439,8 +455,9 @@ void PeopleTracker::publishTrajectory(std::vector<geometry_msgs::Pose> poses,
   
   /*** clean up ***/
   for(int i = 0; i < previous_poses.size(); i++) {
-    if(boost::get<0>(previous_poses[i]) == INVALID_ID)
+    if(boost::get<0>(previous_poses[i]) == INVALID_ID) {
       previous_poses.erase(previous_poses.begin()+i);
+    }
   }
   
   /*** add new coming poses to the previous_poses list ***/  
@@ -613,10 +630,11 @@ void PeopleTracker::connectCallback(ros::NodeHandle &n) {
   bool pose_array = pub_pose_array.getNumSubscribers();
   bool people = pub_people.getNumSubscribers();
   bool trajectory = pub_trajectory.getNumSubscribers();
+  bool trajectory_acc = pub_trajectory_acc.getNumSubscribers();
   bool markers = pub_marker.getNumSubscribers();
   std::map<std::pair<std::string, std::string>, ros::Subscriber>::const_iterator it;
   
-  if(!loc && !pose && !pose_array && !people && !trajectory && !markers) {
+  if(!loc && !pose && !pose_array && !people && !trajectory && !trajectory_acc && !markers) {
     ROS_DEBUG("Pedestrian Localisation: No subscribers. Unsubscribing.");
     for(it = subscribers.begin(); it != subscribers.end(); ++it)
       const_cast<ros::Subscriber&>(it->second).shutdown();
@@ -628,7 +646,11 @@ void PeopleTracker::connectCallback(ros::NodeHandle &n) {
 }
 
 int main(int argc, char **argv) {
+#ifdef ONLINE_LEARNING
+  ros::init(argc, argv, "bayes_people_tracker_ol");
+#else
   ros::init(argc, argv, "bayes_people_tracker");
+#endif
   PeopleTracker* t = new PeopleTracker();
   return 0;
 }
