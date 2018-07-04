@@ -446,7 +446,7 @@ void PeopleTracker::publishTrajectory(std::vector<geometry_msgs::Pose> poses,
   	//std::cerr << "[people_tracker] trajectory ID = " << trajectory.header.seq << ", timestamp = " << trajectory.header.stamp << ", poses size = " << trajectory.poses.size() << std::endl;
 	if(log_trajectories) {
 	  for(int k = 0; k < trajectory.poses.size(); k++) {
-	    std::cerr << trajectory.poses[k].position.x << " " << std::cerr << trajectory.poses[k].position.y << std::endl;
+	    std::cerr << trajectory.poses[k].position.x << " " << trajectory.poses[k].position.y << std::endl;
 	  }
 	}
       }
