@@ -10,6 +10,8 @@ Please watch the videos below for more details.
 [![YouTube Video 1](https://img.youtube.com/vi/bjztHV9rC-0/0.jpg)](https://www.youtube.com/watch?v=bjztHV9rC-0)
 [![YouTube Video 2](https://img.youtube.com/vi/rmPn7mWssto/0.jpg)](https://www.youtube.com/watch?v=rmPn7mWssto)
 
+For a standalone implementation of the clustering method, please refer to: [https://github.com/yzrobot/adaptive_clustering](https://github.com/yzrobot/adaptive_clustering)
+
 ## How to build ##
 ```
 $ cd ~/catkin_ws/src/
