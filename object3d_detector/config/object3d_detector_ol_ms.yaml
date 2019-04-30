@@ -1,4 +1,4 @@
-bayes_people_tracker_ol_ms:
+bayes_people_tracker_ol:
     filter_type: "UKF"                                         # The Kalman filter type: EKF = Extended Kalman Filter, UKF = Uncented Kalman Filter
     cv_noise_params:                                           # The noise for the constant velocity prediction model
         x: 1.4
