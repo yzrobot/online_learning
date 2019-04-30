@@ -5,7 +5,7 @@
   <node pkg="rosbag" type="play" name="rosbag_play" args="--clock $(arg bag)" required="true"/>
   
   <node pkg="velodyne_pointcloud" type="cloud_node" name="cloud_node">
-    <param name="calibration" value="$(find object3d_detector)/config/vlp16.yaml"/>
+    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
     <param name="min_range" value="0.4"/>
     <param name="max_range" value="130.0"/>
   </node>
