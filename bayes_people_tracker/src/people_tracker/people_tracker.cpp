@@ -1,6 +1,6 @@
 #include "people_tracker/people_tracker.h"
 
-//#define MULTI_SENSOR
+#define MULTI_SENSOR
 
 PeopleTracker::PeopleTracker() : detect_seq(0), marker_seq(0) {
   ros::NodeHandle n;
