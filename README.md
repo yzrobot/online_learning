@@ -12,12 +12,34 @@ Please watch the videos below for more details.
 
 For a standalone implementation of the clustering method, please refer to: [https://github.com/yzrobot/adaptive_clustering](https://github.com/yzrobot/adaptive_clustering)
 
-## How to build ##
-```
-$ cd ~/catkin_ws/src/
-$ git clone https://github.com/yzrobot/online_learning.git
-$ cd ~/catkin_ws
+# Install & Build
+```bash
+$ cd catkin_ws/src
+// Install prerequisite packages 
+$ git clone https://github.com/wg-perception/people.git
+$ git clone https://github.com/DLu/wu_ros_tools.git
+$ sudo apt-get install ros-kinetic-bfl
+// The core 
+$ git clone https://github.com/yzrobot/online_learning
+// Build
+$ cd catkin_ws
 $ catkin_make
+```
+
+# Run
+After catkin_make succeed, modify 'line 3' of online_learning/object3d_detector/launch/object3d_detector.launch, and make the value is the path where your bag files are located:
+
+`<arg name="bag" value="/home/yq/Downloads/LCAS_20160523_1200_1218.bag"/>`
+
+The bag file offered by [Lincoln Centre for Autonomous Systems](http://lcas.lincoln.ac.uk) is in velodyne_msgs/VelodyneScan message type, so we would need related velodyne packages in ROS:
+```bash
+$ sudo apt-get install ros-kinetic-velodyne*
+```
+Now, the svm should be able to run:
+```bash
+$ cd catkin_ws
+$ source devel/setup.bash
+$ roslaunch object3d_detector object3d_detector.launch
 ```
 
 ## Citation ##
