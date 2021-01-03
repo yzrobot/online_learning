@@ -17,6 +17,6 @@ install:
 
 script:
   - cd ~/catkin_ws/src
-  - git clone -b Indigo https://github.com/yzrobot/online_learning.git
+  - git clone -b single-sensor-ros-indigo https://github.com/yzrobot/online_learning.git
   - cd ~/catkin_ws
   - catkin_make
