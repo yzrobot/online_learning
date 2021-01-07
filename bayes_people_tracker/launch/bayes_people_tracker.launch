@@ -1,0 +1,32 @@
+<launch>
+  <!-- rosbag play -->
+  <arg name="bag"/>
+  <param name="use_sim_time" value="true"/>
+  <node pkg="rosbag" type="play" name="rosbag_play" args="--clock $(arg bag)" required="true"/>
+  
+  <!-- Velodyne VLP-16 -->
+  <node pkg="velodyne_pointcloud" type="cloud_node" name="cloud_node">
+    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
+    <param name="min_range" value="0.4"/>
+    <param name="max_range" value="50.0"/>
+  </node>
+
+  <!-- FLOBOT 3D Object Detector -->
+  <node pkg="object3d_detector" type="object3d_detector" name="object3d_detector" output="screen" respawn="false">
+    <param name="print_fps" type="bool" value="false"/>
+    <param name="model_file_name" type="string" value="$(find object3d_detector)/model/pedestrian.model"/>
+    <param name="range_file_name" type="string" value="$(find object3d_detector)/model/pedestrian.range"/>
+    <param name="human_size_limit" type="bool" value="true"/>
+  </node>
+  
+  <!-- NBellotto's Bayes People Tracker -->
+  <rosparam command="load" file="$(find bayes_people_tracker)/config/object3d_detector.yaml"/>
+  <node pkg="bayes_people_tracker" type="bayes_people_tracker" name="bayes_people_tracker" output="screen" respawn="false">
+    <param name="target_frame" type="string" value="odom"/>
+  </node>
+  
+  <!-- ROS Visualization -->
+  <param name="robot_description" command="cat $(find flobot_tracker)/urdf/pioneer3at.urdf" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find bayes_people_tracker)/launch/bayes_people_tracker.rviz"/>
+</launch> 

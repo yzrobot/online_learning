@@ -1,0 +1,7 @@
+PROJECT_NAME           = ${CPACK_PACKAGE_NAME}
+PROJECT_NUMBER         = ${VERSION}
+OUTPUT_DIRECTORY       = doc
+INPUT                  = ${CMAKE_CURRENT_SOURCE_DIR}/src
+GENERATE_LATEX         = NO
+QUIET                  = YES
+EXTRACT_ALL            = YES

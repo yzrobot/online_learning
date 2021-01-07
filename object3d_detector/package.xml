@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>object3d_detector</name>
+  <version>0.0.0</version>
+  <description>3D object detection in scenes scanned by 3D LiDAR.</description>
+  <maintainer email="zhi.yan@utbm.fr">Zhi Yan</maintainer>
+  <license>BSD</license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>people_msgs</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>bayes_tracking</build_depend>
+  <build_depend>libsvm-dev</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>people_msgs</run_depend>
+  <run_depend>pcl_conversions</run_depend>
+  <run_depend>pcl_ros</run_depend>
+  <run_depend>bayes_tracking</run_depend>
+  <run_depend>libsvm-dev</run_depend>
+</package>

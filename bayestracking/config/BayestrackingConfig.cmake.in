@@ -1,0 +1,16 @@
+# - Config file for the bayestracking package
+# It defines the following variables
+#  BAYESTRACKING_INCLUDE_DIRS - include directories for FooBar
+#  BAYESTRACKING_LIBRARIES    - libraries to link against
+ 
+# Compute paths
+get_filename_component(BAYESTRACKING_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(BAYESTRACKING_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET bayestracking AND NOT Bayestracking_BINARY_DIR)
+  include("${BAYESTRACKING_CMAKE_DIR}/BayestrackingTargets.cmake")
+endif()
+ 
+# These are IMPORTED targets created by FooBarTargets.cmake
+set(BAYESTRACKING_LIBRARIES bayestracking)

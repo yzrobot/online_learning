@@ -1,0 +1,18 @@
+<package format="2">
+  <name>online_learning</name>
+  <version>0.1.0</version>
+  <description>Online Learning for Human Detection in 3D Point Clouds</description>
+  <maintainer email="zhi.yan@utbm.fr">Zhi Yan</maintainer>
+
+  <license>BSD</license>
+  <author>L-CAS</author>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>bayes_people_tracker</exec_depend>
+  <exec_depend>bayestracking</exec_depend>
+  <exec_depend>object3d_detector</exec_depend>
+  
+  <export>
+    <metapackage/>
+  </export>
+</package>
