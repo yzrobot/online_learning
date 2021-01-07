@@ -713,9 +713,7 @@ void Object3dDetector::classify() {
       pm.pos.z = it->centroid[2];
       unsigned int i = learnable_clusters_.size()-features_.size()+it-features_.begin();
       pm.object_id = std::to_string(learnable_clusters_[i]->header.seq); // sample ID
-      //std::cerr << "sample ID = " << person.name << std::endl;
       pm.reliability = !clusters_probability_.empty() ? clusters_probability_.back() : UNKNOWN;
-      
       pma.people.push_back(pm);
 
       if(svm_find_human) {
@@ -729,7 +727,6 @@ void Object3dDetector::classify() {
 	pm.pos.z = it->centroid[2];
 	pm.object_id = std::to_string(UNKNOWN); // means learning is over
 	pm.reliability = !clusters_probability_.empty() ? clusters_probability_.back() : UNKNOWN;
-	
 	pma.people.push_back(pm);
       }
     }
