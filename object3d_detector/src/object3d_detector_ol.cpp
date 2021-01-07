@@ -265,8 +265,6 @@ void Object3dDetector::trajectoryCallback(const geometry_msgs::PoseArray::ConstP
   if(learn_it) {
     bool stop = false;
     for(int i = 0; i < trajectory->poses.size(); i++) {
-      
-      //std::cerr << "fuck = " << trajectory->header.frame_id << ", learnable_clusters_.size() = " << learnable_clusters_.size() << std::endl;
       for(int j = 0; j < learnable_clusters_.size(); j++) {
 	if((uint32_t)trajectory->poses[i].position.z == learnable_clusters_[j]->header.seq) {
 	  Feature f;
