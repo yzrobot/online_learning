@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+  <!-- rosbag play -->
+	<arg name="bag" value="/media/scosar/Data/RASberry_Datasets/2019-02-08-12-00-54.bag"/>
+	<param name="use_sim_time" value="true"/>
+	<node pkg="rosbag" type="play" name="rosbag_play" args="--clock $(arg bag) --rate 0.6" required="true"/>	
+
+	<!-- Velodyne VLP-16 -->
+	<!-- <node pkg="velodyne_pointcloud" type="cloud_node" name="cloud_node">
+		<param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
+		<param name="min_range" value="0.4"/>
+		<param name="max_range" value="130.0"/>
+	</node> -->
+
+	<!-- FLOBOT 3D Object Detector -->
+	<node pkg="object3d_detector" type="object3d_detector_ol" name="object3d_detector_ol" output="screen" respawn="true">
+		<param name="print_fps" type="bool" value="false"/>
+	</node>
+
+	<node pkg="nodelet" type="nodelet" args="standalone image_proc/resize" name="resize_img">
+	<param name="scale_width" value="0.25"/>
+	<param name="scale_height" value="0.25"/>
+  	<!-- remap input topics -->
+	  <remap from="image" to="/kinect2/hd/image_color_rect"/>
+	  <remap from="camera_info" to="/kinect2/hd/camera_info"/>
+	  <!-- remap output topics -->
+	  <remap from="resize_image/image" to="/camera_resize/image_rect_color"/>
+	  <remap from="resize_image/camera_info" to="/camera_resize/camera_info"/>
+	</node>
+
+	<!-- NBellotto's Bayes People Tracker -->
+	<rosparam command="load" file="$(find object3d_detector)/config/object3d_detector_ol_ms_copy.yaml"/>
+		<node pkg="bayes_people_tracker" type="bayes_people_tracker_ol" name="bayes_people_tracker_ol" output="screen" respawn="true">
+		<param name="target_frame" type="string" value="odom"/>
+	</node>
+
+	<!-- Paris YOLO Tracker -->
+	<node pkg="people_yolo_angle_package" type="people_position.py" name="people_watchtower" output="screen"/>
+
+	<include file="$(find darknet_ros)/launch/darknet_ros.launch"/>
+
+
+	<node pkg="rosbag" type="record" name="rosbag_record" args=" /tf /object3d_detector_ol/markers /people_tracker/marker_array /people_tracker/trajectory /vis_yolo_angles /people_yolo_angles /people_yolo_detector" required="true"/>	
+
+
+    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find object3d_detector)/launch/object3d_detector_ol_ms.rviz"/> -->
+</launch>

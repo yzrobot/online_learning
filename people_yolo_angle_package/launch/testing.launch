@@ -1,0 +1,15 @@
+<launch>
+	<arg name="bag" value="$(find people_yolo_angle_package)/test/out2.bag"/>
+  
+	<param name="use_sim_time" value="true"/>
+	
+	<node pkg="rosbag" type="play" name="rosbag_play" args="--clock $(arg bag) --rate 0.1" required="true"/>
+
+	<node pkg="people_yolo_angle_package" type="people_position.py" name="people_watchtower" output="screen"/>
+
+	<include file="$(find darknet_ros)/launch/darknet_ros.launch"/>
+
+	<node pkg="rostopic" type="rostopic" name="name" 
+    args="echo /people_yolo_detector" output="screen"/>
+
+</launch>

@@ -1,0 +1,42 @@
+<launch>
+  <!-- rosbag play -->
+  <arg name="bag"/>
+  <param name="use_sim_time" value="true"/>
+  <node pkg="rosbag" type="play" name="rosbag_play" args="--clock --queue=1000 $(arg bag)" required="true"/>
+  
+  <!-- Velodyne VLP-16 -->
+  <node pkg="velodyne_pointcloud" type="cloud_node" name="cloud_node">
+    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
+    <param name="min_range" value="0.4"/>
+    <param name="max_range" value="50.0"/>
+  </node>
+
+  <!-- ROS leg detector -->
+  <node pkg="leg_detector" type="leg_detector" name="leg_detector" args="scan:=scan $(find leg_detector)/config/trained_leg_detector.yaml" output="screen">
+    <param name="fixed_frame" type="string" value="odom"/>
+    <param name="publish_leg_markers" type="bool" value="false"/>
+    <param name="publish_people_markers" type="bool" value="true"/>
+  </node>
+  
+  <!-- FLOBOT 3D Object Detector -->
+  <node pkg="object3d_detector" type="object3d_detector_ol" name="object3d_detector_ol" output="screen" respawn="false">
+    <param name="print_fps" type="bool" value="true"/>
+    <param name="find_the_best_training_parameters" type="bool" value="true"/>
+    <param name="svm_save_data_model" type="bool" value="true"/>
+  </node>
+
+  <!-- YOLO Detector -->
+  <node pkg="people_yolo_angle_package" type="people_position.py" name="people_watchtower" output="screen"/>
+  <include file="$(find darknet_ros)/launch/darknet_ros.launch"/>
+  
+  <!-- NBellotto's Bayes People Tracker -->
+  <rosparam command="load" file="$(find bayes_people_tracker)/config/object3d_detector_ol_ms_yolo.yaml"/>
+  <node pkg="bayes_people_tracker" type="bayes_people_tracker_ol" name="bayes_people_tracker_ol" output="screen" respawn="false">
+    <param name="target_frame" type="string" value="odom"/>
+  </node>
+  
+  <!-- ROS Visualization -->
+  <param name="robot_description" command="cat $(find flobot_tracker)/urdf/pioneer3at.urdf" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(env PWD)/object3d_detector_ol_ms.rviz"/>
+</launch>
