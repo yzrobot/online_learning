@@ -213,6 +213,95 @@ private:
   Likelihood_correlated li;
 };
 
+    //==========================================================================
+    //==================== 2D Bearing observation model=======================
+    //==========================================================================
+
+/**
+ * Bearing observation model
+ */
+  class BearingModel : public JacobianModel,
+     public Linrz_correlated_observe_model, public Likelihood_observe_model
+  {
+  private:
+     /** Current sensor pose */
+     Float sensor_x;
+     Float sensor_y;
+     Float sensor_phi;
+  public:
+     /** Size of the state vector */
+     static const std::size_t x_size = 4; // state [x vx y vy]
+     /** Size of the observation vector */
+     static const std::size_t z_size = 1;
+     /** Predicted observation */
+     mutable FM::Vec z_pred;
+
+    /**
+    * Contructor
+    * @p bSD standard deviation of bearing noise
+    */
+    BearingModel(Float bSD);
+
+     
+     virtual Float L(const FM::Vec& x) const
+     // Definition of likelihood for addative noise model given zz
+     {  return li.L(*this, z, h(x));
+     }
+     
+     virtual void Lz (const FM::Vec& zz)
+     // Fix the observation zz about which to evaluate the Likelihood function
+     // Zv is also fixed
+     {  Likelihood_observe_model::z = zz;
+        li.Lz(*this);
+     }
+     
+
+     /**
+      * Non-linear observation model
+      * @param x A-priori estimated state vector x^(k)
+      * @return Estimated observations z^(k)
+      */
+     const FM::Vec& h(const FM::Vec& x) const;
+
+     /**
+      * Model update, to be called before observation/correction
+      * @param sensor_x sensor x position
+      * @param sensor_y sensor y position
+      * @param sensor_phi sensor orientation
+      */
+     void update(const Float& sensor_x, const Float& sensor_y, const Float& sensor_phi);
+
+     /**
+      * Model update, to be called before observation/correction
+      * @param x State vector around which the linearization is done (update Jacobian)
+      */
+     void updateJacobian(const FM::Vec& x);
+
+     /**
+      * Normalize the angular components of the observation model
+      * @param z_denorm 
+      * @param z_from 
+      */
+     void normalise(FM::Vec& z_denorm, const FM::Vec& z_from) const;
+
+  private:
+     struct Likelihood_correlated
+     {
+        Likelihood_correlated(std::size_t z_size) :
+           zInnov(z_size), Z_inv(z_size,z_size)
+        {  zset = false;
+        }
+        mutable FM::Vec zInnov; // Normailised innovation, temporary for L(x)
+        FM::SymMatrix Z_inv;    // Inverse Noise Covariance
+        Float logdetZ;          // log(det(Z)
+        bool zset;
+        static Float scaled_vector_square(const FM::Vec& v, const FM::SymMatrix& V);
+        Float L(const Correlated_additive_observe_model& model, const FM::Vec& z, const FM::Vec& zp) const;
+        // Definition of likelihood for addative noise model given zz
+        void Lz(const Correlated_additive_observe_model& model);
+     };
+     Likelihood_correlated li;
+  };
 
     //==========================================================================
     //==================== 2D Polar observation model=======================

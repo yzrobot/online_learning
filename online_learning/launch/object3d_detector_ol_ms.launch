@@ -32,7 +32,7 @@
   </node>
   
   <!-- ROS Visualization -->
-  <param name="robot_description" command="cat $(find flobot_tracker)/urdf/pioneer3at.urdf" />
+  <!-- <param name="robot_description" command="cat $(find flobot_tracker)/urdf/pioneer3at.urdf" /> -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(env PWD)/object3d_detector_ol_ms.rviz"/>
 </launch>
