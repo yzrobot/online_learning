@@ -44,7 +44,7 @@ namespace MTRK {
   
   typedef std::vector<observation_t> sequence_t;
   typedef enum {NN, /*JPDA,*/ NNJPDA} association_t;
-  typedef enum {CARTESIAN, POLAR} observ_model_t;
+  typedef enum {CARTESIAN, POLAR, BEARING} observ_model_t;
   
   // to be defined by user
   template<class FilterType>

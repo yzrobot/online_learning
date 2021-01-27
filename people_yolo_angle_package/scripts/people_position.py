@@ -84,7 +84,7 @@ class people_watchtower():
 
             pm.pos.y = position_y
             pm.reliability = ppl.probability
-            pm.object_id = -1 
+            pm.object_id = "-1" 
 
             temp_angles.append(pose)
             temp.append(person)

@@ -23,7 +23,7 @@ bayes_people_tracker_ol:
             matching_algorithm: "NN"
             seq_size: 5
             seq_time: 0.2
-       people_yolo_detector:
+        people_yolo_detector:
             topic: "/people_yolo_measurements"
             observation_model: "BEARING"
             noise_params:

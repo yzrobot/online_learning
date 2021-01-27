@@ -104,6 +104,9 @@ bool MTRK::initialize(FilterType* &filter, sequence_t& obsvSeq, observ_model_t o
     filter = new FilterType(4);
     filter->init(x, X);
   }
+
+  if(om_flag == BEARING) return false;
+  
   
   return true;
 }
@@ -135,9 +138,14 @@ class SimpleTracking {
       det.plm = new PolarModel(pos_noise_x, pos_noise_y);
     }
 
+    if(om_flag == BEARING)
+      det.brm = new BearingModel(pos_noise_y); 
+    
     det.seqSize = seqSize;
     det.seqTime = seqTime;
     detectors[name] = det;
+  ROS_INFO_STREAM("Finished adding detector");
+
   }
   
   std::map<long, std::vector<people_msgs::Person> > track(double* track_time = NULL) {
@@ -229,6 +237,7 @@ class SimpleTracking {
   typedef struct {
     CartesianModel *ctm;    // Cartesian observation model
     PolarModel *plm;        // Polar observation model
+    BearingModel *brm;
     observ_model_t om_flag; // Observation model flag
     association_t alg;      // Data association algorithm
     unsigned int seqSize;   // Minimum number of observations for new track creation

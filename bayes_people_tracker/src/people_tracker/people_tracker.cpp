@@ -129,13 +129,13 @@ void PeopleTracker::parseParams(ros::NodeHandle n) {
 	    int seq_size = detectors[it->first]["seq_size"];
 	    pf->addDetectorModel(it->first,
 				 detectors[it->first]["matching_algorithm"] == "NN" ? NN : detectors[it->first]["matching_algorithm"] == "NNJPDA" ? NNJPDA : throw(asso_exception()),
-				 detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR : throw(observ_exception()),
+				 detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR: detectors[it->first]["observation_model"] == "BEARING"? BEARING  : throw(observ_exception()),
 				 detectors[it->first]["noise_params"]["x"],
 				 detectors[it->first]["noise_params"]["y"],(unsigned int) seq_size, detectors[it->first]["seq_time"]);
 	  } else {
 	    pf->addDetectorModel(it->first,
 				 detectors[it->first]["matching_algorithm"] == "NN" ? NN : detectors[it->first]["matching_algorithm"] == "NNJPDA" ? NNJPDA : throw(asso_exception()),
-				 detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR : throw(observ_exception()),
+				 detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR: detectors[it->first]["observation_model"] == "BEARING"? BEARING  : throw(observ_exception()),
 				 detectors[it->first]["noise_params"]["x"],
 				 detectors[it->first]["noise_params"]["y"]);
 	  }
@@ -144,13 +144,13 @@ void PeopleTracker::parseParams(ros::NodeHandle n) {
 	    int seq_size = detectors[it->first]["seq_size"];
 	    ukf->addDetectorModel(it->first,
 				  detectors[it->first]["matching_algorithm"] == "NN" ? NN : detectors[it->first]["matching_algorithm"] == "NNJPDA" ? NNJPDA : throw(asso_exception()),
-				  detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR : throw(observ_exception()),
+				 detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR: detectors[it->first]["observation_model"] == "BEARING"? BEARING  : throw(observ_exception()),
 				  detectors[it->first]["noise_params"]["x"],
 				  detectors[it->first]["noise_params"]["y"],(unsigned int) seq_size,detectors[it->first]["seq_time"]);
 	  } else {
 	    ukf->addDetectorModel(it->first,
 				  detectors[it->first]["matching_algorithm"] == "NN" ? NN : detectors[it->first]["matching_algorithm"] == "NNJPDA" ? NNJPDA : throw(asso_exception()),
-				  detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR : throw(observ_exception()),
+          detectors[it->first]["observation_model"] == "CARTESIAN" ? CARTESIAN : detectors[it->first]["observation_model"] == "POLAR" ? POLAR: detectors[it->first]["observation_model"] == "BEARING"? BEARING  : throw(observ_exception()),
 				  detectors[it->first]["noise_params"]["x"],
 				  detectors[it->first]["noise_params"]["y"]);
 	  }
