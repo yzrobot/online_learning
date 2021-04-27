@@ -4,7 +4,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b189ca851b4a30903e19fef1a10d36)](https://www.codacy.com/gh/yzrobot/online_learning/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yzrobot/online_learning&amp;utm_campaign=Badge_Grade)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-:boom: Please check my Ph.D. student's amazing ongoing work (with very high modularity): [efficient_online_learning](https://github.com/RuiYang-1010/efficient_online_learning) for autonomous driving! :boom:
+:boom: Please check my Ph.D. student's amazing ongoing work (with very high modularity): [efficient_online_learning](https://github.com/epan-utbm/efficient_online_learning) for autonomous driving! :boom:
 
 This is a ROS-based online learning framework for human classification in 3D LiDAR scans, taking advantage of robust multi-target tracking to avoid the need for data annotation by a human expert.
 Please watch the videos below for more details.
