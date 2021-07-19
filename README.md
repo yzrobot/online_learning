@@ -1,8 +1,8 @@
 # Online Learning for Human Detection in 3D Point Clouds
 
-[![Build Status](https://travis-ci.org/yzrobot/online_learning.svg?branch=master)](https://travis-ci.org/yzrobot/online_learning)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b189ca851b4a30903e19fef1a10d36)](https://www.codacy.com/gh/yzrobot/online_learning/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yzrobot/online_learning&amp;utm_campaign=Badge_Grade)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+## This branch is in active development and we will let you know when it is ready.
 
 ## Build
 
