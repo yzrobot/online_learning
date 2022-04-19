@@ -15,7 +15,7 @@ Please watch the videos below for more details.
 For a standalone implementation of the clustering method, please refer to: [https://github.com/yzrobot/adaptive_clustering](https://github.com/yzrobot/adaptive_clustering)
 
 # Install & Build
-```bash
+```sh
 $ cd catkin_ws/src
 // Install prerequisite packages 
 $ git clone https://github.com/wg-perception/people.git
@@ -51,7 +51,7 @@ If you are considering using this code, please reference the following:
 @inproceedings{yz17iros,
    author = {Zhi Yan and Tom Duckett and Nicola Bellotto},
    title = {Online learning for human classification in {3D LiDAR-based} tracking},
-   booktitle = {In Proceedings of the 2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+   booktitle = {Proceedings of the 2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
    pages = {864--871},
    address = {Vancouver, Canada},
    month = {September},
