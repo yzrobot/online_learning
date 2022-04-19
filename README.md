@@ -7,11 +7,11 @@
 This is a ROS-based online transfer learning framework for human classification in 3D LiDAR scans, taking advantage of robust multi-target tracking to avoid the need for data annotation by a human expert.
 
 ## How to build ##
-```
-$ cd ~/catkin_ws/src/
-$ git clone -b multisensor https://github.com/yzrobot/online_learning.git
-$ cd ~/catkin_ws
-$ catkin_make
+```sh
+cd ~/catkin_ws/src/
+git clone -b multisensor https://github.com/yzrobot/online_learning.git
+cd ~/catkin_ws
+catkin_make
 ```
 
 ## Dataset ##
@@ -23,7 +23,7 @@ If you are considering using this code, please reference the following:
 @inproceedings{yz18iros,
    title={Multisensor Online Transfer Learning for 3D LiDAR-based Human Detection with a Mobile Robot},
    author={Zhi Yan and Li Sun and Tom Duckett and Nicola Bellotto},
-   booktitle = {In Proceedings of the 2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+   booktitle = {Proceedings of the 2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
    address = {Madrid, Spain},
    month = {October},
    year = {2018}
